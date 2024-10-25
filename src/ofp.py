@@ -1,7 +1,10 @@
 """ OFP App entry point """
 
+from controllers.login import LoginController
+
 def _main():
-    print("Start")
+    app = LoginController()
+    app.run()
 
 
 if __name__ == "__main__":
