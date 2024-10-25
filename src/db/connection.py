@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def create_connection():
+def create_connection() -> bool:
     connection = None
     
     try:
@@ -18,6 +18,9 @@ def create_connection():
         
         if connection.is_connected():
             print("Connected to MYSQL")
+            return True
+        else:
+            return False
         
     except Error as e:
         print(f"Error {e} occurred")
