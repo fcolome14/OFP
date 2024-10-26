@@ -24,4 +24,4 @@ def create_connection() -> bool:
         
     except Error as e:
         print(f"Error {e} occurred")
-        raise e
+        raise Error
