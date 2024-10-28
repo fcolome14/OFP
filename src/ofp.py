@@ -6,7 +6,7 @@ from db.connection import DatabaseManager
 def _main():
     db_connection = DatabaseManager()
     print(db_connection.get_fleet())
-    print(db_connection.get_pax_pos(1))
+    print(db_connection.get_registers(1))
     app = LoginController()
     app.run()
 
