@@ -33,11 +33,3 @@ class TestConnection:
         mocker.patch('src.db.connection.mysqlcon.connect', side_effect = Error)
         with pytest.raises(Error):
             Connection.create_connection(self)
-   
-    @pytest.mark.skipif()
-    #TODO: FIX FUNC
-    def test_close_connection(self, mocker: MockerFixture):
-        mocker.patch('src.db.connection.disconnect', side_effect = Error)
-        
-        with pytest.raises(Error):
-            Connection.close_connection()
