@@ -6,9 +6,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Connection:
+    
+    def __init__(self):
+        self.connection = None
 
     def create_connection(self) -> bool:
-        self.connection = None
         
         try:
             self.connection = mysqlcon.connect(

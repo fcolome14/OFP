@@ -17,3 +17,6 @@ class LoginController:
             self.view.show_frame("DashboardScreen") #Switch screen
         else:
             self.view.display_message("Login Failed. Try again.")
+    
+    def logout(self):
+        self.view.show_frame("LoginScreen") #Switch screen
