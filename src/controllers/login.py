@@ -2,10 +2,10 @@
 from models.user import UserModel
 from ui.login import LoginView
 
-class LoginController:
+class LoginController():
     def __init__(self):
-        self.model = UserModel()              # Model initialization
-        self.view = LoginView(self)           # View initialization, with self (controller) as a parameter
+        self.model = UserModel()
+        self.view = LoginView(self)
     
     def run(self):
         self.view.mainloop()
