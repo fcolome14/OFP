@@ -1,6 +1,8 @@
 from mysql.connector import pooling, Error
 import os
 from dotenv import load_dotenv
+from functools import wraps
+#from .conf import db_conn_wrapper
 
 load_dotenv()
 
@@ -21,50 +23,62 @@ class DatabaseManager:
         except Error as e:
             print(f"Error {e} occurred during connection attempt")
             raise
-
+    
+    def db_conn_wrapper(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            connection = self.get_connection()
+            cursor =  None
+            
+            try:
+                cursor = connection.cursor()
+                result = func(self, cursor, *args, **kwargs)
+                return result
+            except Error as e:
+                print(f"Error in {func.__name__}: {e}")
+                return []
+            finally:
+                if cursor:
+                    cursor.close()
+                self.close_connection(connection)
+                
+        return wrapper
+    
     def get_connection(self):
         return self.pool.get_connection()
 
     def close_connection(self, connection):
         connection.close()  
         
-    def get_fleet(self):
-        connection = self.get_connection() 
-        cursor = None
-        try:
-            cursor = connection.cursor()
-            cursor.execute("SELECT * FROM fleet")
-            result = cursor.fetchall()
-            return [(row[0], row[1], row[2]) for row in result]
-            
-        except Error as e:
-            print(f"Error fetching fleet: {e}")
-            return []
-        
-        finally:
-            if cursor:
-                cursor.close()
-                self.close_connection(connection)
+    @db_conn_wrapper
+    def get_fleet(self, cursor) -> list[str]:
+        """Returns the list of aircrafts
+
+        Args:
+
+        Returns:
+            list[str]: _description_
+        """
+        cursor.execute("SELECT * FROM fleet")
+        result = cursor.fetchall()
+        return [(row[0], row[1], row[2]) for row in result]
     
-    def get_registers(self, aircraft_id):
-        connection = self.get_connection()
-        cursor = None
-        try:
-            cursor = connection.cursor()
-            cursor.execute(f"SELECT * FROM aircraft_reg WHERE id_aircraft = {aircraft_id}")
-            result = cursor.fetchall()
-            return [row[1] for row in result]
-            
-        except Error as e:
-            print(f"Error fetching fleet: {e}")
-            return []
-        
-        finally:
-            if cursor:
-                cursor.close()
-                self.close_connection(connection)
+    @db_conn_wrapper
+    def get_registers(self, cursor, aircraft_id: int = None) -> list[str]:
+        """Returns a list of registrations from a selected aircraft type
+
+        Args:
+            aircraft_id (int, optional): Aircraft ident. Defaults to None.
+
+        Returns:
+            list[str]: List of registrations
+        """
+        cursor.execute(f"SELECT * FROM aircraft_reg WHERE id_aircraft = {aircraft_id}")
+        result = cursor.fetchall()
+        return [row[1] for row in result]
     
-    def get_pax(self, aircraft_id: int = None) -> int:
+    @db_conn_wrapper
+    def get_pax(self, cursor, aircraft_id: int = None) -> int:
         """Returns the number of passengers for a given aircraft
 
         Args:
@@ -73,27 +87,17 @@ class DatabaseManager:
         Returns:
             int: Number of passengers
         """
-        connection = self.get_connection()
-        cursor = None
-        try:
-            if aircraft_id is not None:
-                cursor = connection.cursor()
+        if aircraft_id is not None:
                 cursor.execute(f"SELECT pax FROM pax WHERE idpax = (SELECT num_pax FROM fleet WHERE id = {aircraft_id})")
                 result = cursor.fetchall()
+                if not result:
+                    return 0
                 return int([row[0] for row in result][0])
-            else:
-                return 0
-            
-        except Error as e:
-            print(f"Error fetching fleet: {e}")
-            return []
-        
-        finally:
-            if cursor:
-                cursor.close()
-                self.close_connection(connection)
+        else:
+            return 0
     
-    def get_pax_pos(self, aircraft_id: int = None) -> list[str]:
+    @db_conn_wrapper
+    def get_pax_pos(self, cursor, aircraft_id: int = None) -> list[str]:
         """Returns the name of passengers positions for a given aircraft
 
         Args:
@@ -102,46 +106,24 @@ class DatabaseManager:
         Returns:
             list[str]: List of position names
         """
-        connection = self.get_connection()
-        cursor = None
-        try:
-            if aircraft_id is not None:
-                cursor = connection.cursor()
-                cursor.execute(f"SELECT pos_data FROM pax WHERE idpax = (SELECT num_pax FROM fleet WHERE id = {aircraft_id})")
-                result = [pos[0] for pos in cursor.fetchall()][0]
-                return result.split(",")
-            else:
+        if aircraft_id is not None:
+            cursor.execute(f"SELECT pos_data FROM pax WHERE idpax = (SELECT num_pax FROM fleet WHERE id = {aircraft_id})")
+            result = cursor.fetchall()
+            if not result:
                 return []
-            
-        except Error as e:
-            print(f"Error fetching fleet: {e}")
+            return result[0][0].split(",")
+        else:
             return []
-        
-        finally:
-            if cursor:
-                cursor.close()
-                self.close_connection(connection)
+
     
-    def get_pilots(self) -> list[str]:
+    @db_conn_wrapper
+    def get_pilots(self, cursor) -> list[str]:
         """List of pilots
 
         Returns:
             list[str]: List of pilots alias
         """
         
-        connection = self.get_connection()
-        cursor = None
-        try:
-            cursor = connection.cursor()
-            cursor.execute("SELECT * FROM crew")
-            return [pos[3] for pos in cursor.fetchall()]
-            
-        except Error as e:
-            print(f"Error fetching fleet: {e}")
-            return []
-        
-        finally:
-            if cursor:
-                cursor.close()
-                self.close_connection(connection)
+        cursor.execute("SELECT * FROM crew")
+        return [pos[3] for pos in cursor.fetchall()]
             

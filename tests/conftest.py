@@ -16,4 +16,4 @@ def db_mocking(mocker: MockerFixture):
     #Simulates the behaviour of a real DDBB connection, where calling cursor would give you a cursor object
     mock_connection.cursor.return_value = mock_cursor
     
-    return mock_connection, mock_cursor
+    return mock_cursor

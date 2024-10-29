@@ -1,12 +1,8 @@
 """ OFP App entry point """
 
 from controllers.login import LoginController
-from db.connection import DatabaseManager
 
 def _main():
-    db_connection = DatabaseManager()
-    print(db_connection.get_fleet())
-    print(db_connection.get_registers(1))
     app = LoginController()
     app.run()
 
