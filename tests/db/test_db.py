@@ -1,7 +1,6 @@
 """ pytest --cov=src.db.connection tests/  """
 
 import pytest
-from pytest_mock import MockerFixture
 from src.db.connection import DatabaseManager
 from mysql.connector import Error
 
