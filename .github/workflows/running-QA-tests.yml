@@ -18,6 +18,11 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: python_app_test
+        options: > 
+          --health-cmd="mysqladmin ping -proot" 
+          --health-interval=10s 
+          --health-timeout=5s 
+          --health-retries=3
         ports:
           - 3306:3306
 
@@ -39,8 +44,14 @@ jobs:
         MYSQL_ROOT_PASSWORD: password
         MYSQL_DATABASE: python_app_test
       run: |
+        # Wait for MySQL service to initialize
+        until docker exec $(docker ps -qf "ancestor=mysql:5.7") mysqladmin ping -h127.0.0.1 -p$MYSQL_ROOT_PASSWORD --silent; do
+          echo "Waiting for MySQL to be ready..."
+          sleep 5
+        done
+        # Run MySQL command to create the database
         docker exec $(docker ps -qf "ancestor=mysql:5.7") \
-        mysql -uroot -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;"
+        mysql -uroot -p$MYSQL_ROOT_PASSWORD -h127.0.0.1 -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;"
 
     - name: Run python tests
       env:
