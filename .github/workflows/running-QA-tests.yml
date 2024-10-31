@@ -13,15 +13,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
       services:
-        mysql:
-            image: mysql:5.7
-            env:
-                MYSQL_ALLOW_EMPTY_PASSWORD: yes
-                MYSQL_DATABASE: laravel_tags
-            ports:
-                - 3306
-            options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-
+      mysql:
+        image: mysql:5.7  # Use the appropriate MySQL version
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: your_database_name  # Change to your test database
+          MYSQL_USER: your_username  # Change to your test user
+          MYSQL_PASSWORD: your_password  # Change to your test user's password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+        
 
     steps:
     - uses: actions/checkout@v4
@@ -36,8 +42,11 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-    - name: Run python tests
+    - name: Run tests
       env:
-        DB_PORT: ${{ job.services.mysql.ports[3306] }}
+        DB_HOST: localhost
+        DB_USER: your_username  # Same as above
+        DB_PASSWORD: your_password  # Same as above
+        DB_NAME: your_database_name  # Same as above
       run: |
         pytest
