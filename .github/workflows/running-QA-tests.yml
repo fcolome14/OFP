@@ -14,14 +14,13 @@ jobs:
     runs-on: ubuntu-latest
       services:
         mysql:
-          image: mysql:5.7
-          env:
-            MYSQL_ROOT_PASSWORD: password
-            MYSQL_DATABASE: python_app_test
-          options: >
-            --health-cmd="mysqladmin ping -proot" --health-interval=10s --health-timeout=5s --health-retries=3
-          ports:
-            - 3306:3306
+            image: mysql:5.7
+            env:
+                MYSQL_ALLOW_EMPTY_PASSWORD: yes
+                MYSQL_DATABASE: laravel_tags
+            ports:
+                - 3306
+            options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
 
     steps:
@@ -37,23 +36,8 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-    - name: Configure MySQL database
-      env:
-        MYSQL_ROOT_PASSWORD: password
-        MYSQL_DATABASE: python_app_test
-      run: |
-        # Wait for MySQL service to initialize
-        until docker exec $(docker ps -qf "ancestor=mysql:5.7") mysqladmin ping -h127.0.0.1 -p$MYSQL_ROOT_PASSWORD --silent; do
-          echo "Waiting for MySQL to be ready..."
-          sleep 5
-        done
-        # Run MySQL command to create the database
-        docker exec $(docker ps -qf "ancestor=mysql:5.7") \
-        mysql -uroot -p$MYSQL_ROOT_PASSWORD -h127.0.0.1 -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;"
-
     - name: Run python tests
       env:
-        MYSQL_DATABASE: python_app_test
-        MYSQL_ROOT_PASSWORD: password
+        DB_PORT: ${{ job.services.mysql.ports[3306] }}
       run: |
         pytest
