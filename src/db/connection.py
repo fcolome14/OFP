@@ -48,10 +48,10 @@ class DatabaseManager:
         return self.pool.get_connection()
 
     def close_connection(self, connection):
-        connection.close()  
+        connection.close()
         
     @db_conn_wrapper
-    def get_fleet(self, cursor) -> list[str]:
+    def get_fleet(self, cursor) -> dict:
         """Returns the list of aircrafts
 
         Args:
@@ -61,7 +61,8 @@ class DatabaseManager:
         """
         cursor.execute("SELECT * FROM fleet")
         result = cursor.fetchall()
-        return [(row[0], row[1], row[2]) for row in result]
+        result = {(row[0], row[2]):row[1] for row in result}
+        return result
     
     @db_conn_wrapper
     def get_registers(self, cursor, aircraft_id: int = None) -> list[str]:
@@ -125,5 +126,76 @@ class DatabaseManager:
         """
         
         cursor.execute("SELECT * FROM crew")
-        return [pos[3] for pos in cursor.fetchall()]
-            
+        return {(row[0], row[3]):(row[1] +" "+ row[2], row[4]) for row in cursor.fetchall()}
+    
+    @db_conn_wrapper
+    def get_pilot_weight(self, cursor, id_pilot: int = None) -> float:
+        """Returns selected pilot's weight
+
+        Args:
+            cursor (_type_): _description_
+            id_pilot (int, optional): _description_. Defaults to None.
+
+        Returns:
+            float: _description_
+        """
+        
+        if id_pilot is not None:
+            cursor.execute(f"SELECT weight FROM crew WHERE idcrew = {id_pilot}")
+            result = cursor.fetchall()
+            if result is not None:
+                return result
+            else:
+                return 0.00
+        else:
+            return 0.00
+    
+    @db_conn_wrapper
+    def get_long_limits(self, cursor, aircraft_id: int = None) -> list[(str, str)]:
+        
+        if aircraft_id is not None:
+            cursor.execute(f"SELECT * FROM limits_long WHERE id_aircraft = {aircraft_id}")
+            result = cursor.fetchall()
+            if not result:
+                return []
+            return [(long_lim[2], long_lim[3]) for long_lim in result]
+        else:
+            return []
+    
+    @db_conn_wrapper
+    def get_pax_arms(self, cursor, aircraft_id: int = None) -> list[(str, str)]:
+        
+        if aircraft_id is not None:
+            cursor.execute(f"SELECT * FROM arms WHERE id_aircrft = {aircraft_id}")
+            result = cursor.fetchall()
+            if not result:
+                return []
+            return [(arm[1], arm[2], arm[4], arm[5]) for arm in result]
+        else:
+            return []
+    
+    @db_conn_wrapper
+    def get_pax_long_arms(self, cursor, aircraft_id: int = None) -> list[(str, str)]:
+        
+        if aircraft_id is not None:
+            cursor.execute(f"SELECT pax_pos, arm_long, is_baggage FROM arms WHERE id_aircrft = {aircraft_id}")
+            result = cursor.fetchall()
+            if not result:
+                return []
+            return result
+        else:
+            return []
+    
+    @db_conn_wrapper
+    def get_aircraft_arms(self, cursor, aircraft_id: int = None) -> list[(str, str)]:
+        
+        if aircraft_id is not None:
+            cursor.execute(f"SELECT bew, arm_long, arm_lat, main_fuel_arm_long, main_fuel_arm_lat, aux_fuel_arm_long, aux_fuel_arm_lat, fuel_type FROM fleet WHERE id = {aircraft_id}")
+            result = cursor.fetchall()
+            if not result:
+                return []
+            result = [result[0]]
+            return result
+        else:
+            return []
+    

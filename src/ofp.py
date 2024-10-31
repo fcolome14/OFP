@@ -1,6 +1,6 @@
 """ OFP App entry point """
 
-from controllers.login import LoginController
+from src.controllers.login import LoginController
 
 def _main():
     app = LoginController()
