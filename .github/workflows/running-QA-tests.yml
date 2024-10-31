@@ -12,21 +12,21 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-      services:
+    services:
       mysql:
-        image: mysql:5.7  # Use the appropriate MySQL version
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: python_app_test  # Change to your test database
-          MYSQL_USER: root  # Change to your test user
-          MYSQL_PASSWORD: password  # Change to your test user's password
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h localhost"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
+          image: mysql:5.7  # Use the appropriate MySQL version
+          env:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: python_app_test  # Change to your test database
+            MYSQL_USER: root  # Change to your test user
+            MYSQL_PASSWORD: password  # Change to your test user's password
+          ports:
+            - 3306:3306
+          options: >-
+            --health-cmd="mysqladmin ping -h localhost"
+            --health-interval=10s
+            --health-timeout=5s
+            --health-retries=3
         
 
     steps:
