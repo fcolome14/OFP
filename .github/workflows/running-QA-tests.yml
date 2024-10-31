@@ -19,10 +19,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: python_app_test
         options: > 
-          --health-cmd="mysqladmin ping -proot" 
-          --health-interval=10s 
-          --health-timeout=5s 
-          --health-retries=3
+          --health-cmd="mysqladmin ping -proot" --health-interval=10s --health-timeout=5s --health-retries=3
         ports:
           - 3306:3306
 
