@@ -12,16 +12,17 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: python_app_test
-        options: > 
-          --health-cmd="mysqladmin ping -proot" --health-interval=10s --health-timeout=5s --health-retries=3
-        ports:
-          - 3306:3306
+      services:
+        mysql:
+          image: mysql:5.7
+          env:
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: python_app_test
+          options: >
+            --health-cmd="mysqladmin ping -proot" --health-interval=10s --health-timeout=5s --health-retries=3
+          ports:
+            - 3306:3306
+
 
     steps:
     - uses: actions/checkout@v4
