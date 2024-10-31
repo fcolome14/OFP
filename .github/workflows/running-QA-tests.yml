@@ -41,10 +41,5 @@ jobs:
         mysql -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;" -u$DB_USER -p$DB_PASSWORD
 
     - name: Run python tests
-      env:
-        MYSQL_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
-        MYSQL_DATABASE: ${{ secrets.DB_DATABASE }}
-        MYSQL_USER: runner
-        MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: |
         pytest
