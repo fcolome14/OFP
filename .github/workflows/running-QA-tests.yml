@@ -20,7 +20,7 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_HOST: ${{ secrets.DB_HOST }}
+          MYSQL_HOST: 127.0.0.1
           MYSQL_USER: ${{ secrets.DB_USER }}
           MYSQL_DATABASE: ${{ secrets.DB_DATABASE }}
           MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
