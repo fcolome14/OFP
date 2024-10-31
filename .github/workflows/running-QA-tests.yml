@@ -1,4 +1,3 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
 name: Operational Flight Plan Application
 
 on:
@@ -12,15 +11,15 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     services:
       mysql:
         image: mysql:5.7
         env:
-          DB_DATABASE: python_app_test
-          DB_USER: root
-          DB_PASSWORD: password
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: python_app_test
+        ports:
+          - 3306:3306
 
     steps:
     - uses: actions/checkout@v4
@@ -35,11 +34,17 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-    - name: Configure MySQL user
+    - name: Configure MySQL database
+      env:
+        MYSQL_ROOT_PASSWORD: password
+        MYSQL_DATABASE: python_app_test
       run: |
-        sudo /etc/init.d/mysql start
-        mysql -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;" -u$DB_USER -p$DB_PASSWORD
+        docker exec $(docker ps -qf "ancestor=mysql:5.7") \
+        mysql -uroot -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;"
 
     - name: Run python tests
+      env:
+        MYSQL_DATABASE: python_app_test
+        MYSQL_ROOT_PASSWORD: password
       run: |
         pytest
