@@ -1,6 +1,6 @@
 # view/login_view.py
 import customtkinter as ctk
-from .dashboard import Dashboard
+from .core.dashboard import Dashboard
 
 class LoginView(ctk.CTk):
     def __init__(self, controller):

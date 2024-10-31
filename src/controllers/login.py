@@ -1,6 +1,6 @@
 # controller/login_controller.py
-from models.user import UserModel
-from ui.login import LoginView
+from src.models.user import UserModel
+from src.ui.login import LoginView
 
 class LoginController():
     def __init__(self):
