@@ -12,7 +12,7 @@ class TestCalc:
         mocker.patch.object(DatabaseManager, 'get_connection', return_value = mock_connection)
         mocker.patch.object(DatabaseManager, 'get_pax_long_arms', return_value = [("FR", 125.73, 0), ("FR", 125.73, 1), ("FL", 125.73, 0), ("FL", 111.76, 1), ("RR", 201.93, 0), ("RR", 201.93, 1)])
         #bew, arm_long, arm_lat, main_fuel_arm_long, main_fuel_arm_lat, aux_fuel_arm_lon, aux_fuel_arm_lat fuel_type
-        mocker.patch.object(DatabaseManager, 'get_aircraft_arms', return_value = [687.87, 267.97, -4.39, 269.24, -34.29, 259.08, -34.29, 1])
+        mocker.patch.object(DatabaseManager, 'get_aircraft_arms', return_value = [(687.87, 267.97, -4.39, 269.24, -34.29, 259.08, -34.29, 1)])
         #mocker.patch.object(DatabaseManager, 'get_pilot_weight', return_value = 75)
         mock_connection.cursor.return_value = mock_cursor
         
