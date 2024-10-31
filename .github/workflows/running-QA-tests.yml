@@ -21,6 +21,7 @@ jobs:
         image: mysql:5.7
         env:
           MYSQL_HOST: 127.0.0.1
+          MYSQL_USER: "root"
           MYSQL_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
           MYSQL_DATABASE: ${{ secrets.DB_DATABASE }}
           MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
@@ -39,7 +40,8 @@ jobs:
     - name: Run python tests
       env:
         MYSQL_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
-        MYSQL_HOST: ${{ secrets.DB_HOST }}
+        MYSQL_HOST: 127.0.0.1
+        MYSQL_USER: "root"
         MYSQL_DATABASE: ${{ secrets.DB_DATABASE }}
         MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: |
