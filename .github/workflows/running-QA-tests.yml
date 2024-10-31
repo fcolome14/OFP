@@ -1,52 +1,30 @@
-name: Operational Flight Plan Application
+name: Run Tests
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main  # Change to your main branch
   pull_request:
-    branches: [ "main", "dev0", "dev1" ]
-
-permissions:
-  contents: read
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-          image: mysql:8.1  # Use the appropriate MySQL version
-          env:
-            MYSQL_ROOT_PASSWORD: root
-            MYSQL_DATABASE: python_app_test  # Change to your test database
-            MYSQL_USER: root  # Change to your test user
-            MYSQL_PASSWORD: password  # Change to your test user's password
-          ports:
-            - 3306:3306
-          options: >-
-            --health-cmd="mysqladmin ping -h localhost"
-            --health-interval=10s
-            --health-timeout=5s
-            --health-retries=3
-        
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        python-version: "3.10"
+        python-version: '3.10'  # Specify your Python version
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install -r requirements.txt  # Assuming you have a requirements file
 
     - name: Run tests
-      env:
-        DB_HOST: localhost
-        DB_USER: root  # Same as above
-        DB_PASSWORD: password  # Same as above
-        DB_NAME: python_app_test  # Same as above
       run: |
-        pytest
+        pip install pytest pytest-cov  # Install pytest and coverage
+        pytest --cov=src.db.connection tests/
