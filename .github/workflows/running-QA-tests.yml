@@ -17,9 +17,9 @@ jobs:
         image: mysql:5.7  # Use the appropriate MySQL version
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: your_database_name  # Change to your test database
-          MYSQL_USER: your_username  # Change to your test user
-          MYSQL_PASSWORD: your_password  # Change to your test user's password
+          MYSQL_DATABASE: python_app_test  # Change to your test database
+          MYSQL_USER: root  # Change to your test user
+          MYSQL_PASSWORD: password  # Change to your test user's password
         ports:
           - 3306:3306
         options: >-
@@ -45,8 +45,8 @@ jobs:
     - name: Run tests
       env:
         DB_HOST: localhost
-        DB_USER: your_username  # Same as above
-        DB_PASSWORD: your_password  # Same as above
-        DB_NAME: your_database_name  # Same as above
+        DB_USER: root  # Same as above
+        DB_PASSWORD: password  # Same as above
+        DB_NAME: python_app_test  # Same as above
       run: |
         pytest
