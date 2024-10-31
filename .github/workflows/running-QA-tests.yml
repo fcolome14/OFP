@@ -16,7 +16,21 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_HOST: ${{ secrets.DB_HOST }}
+          MYSQL_USER: ${{ secrets.DB_USER }}
+          MYSQL_DATABASE: ${{ secrets.DB_DATABASE }}
+          MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.10
@@ -27,9 +41,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Start SQL service
-      run: |
-        sudo /etc/init.d/mysql start
     - name: Run python tests
+      env:
+        MYSQL_HOST: ${{ secrets.DB_HOST }}
+        MYSQL_USER: ${{ secrets.DB_USER }}
+        MYSQL_DATABASE: ${{ secrets.DB_DATABASE }}
+        MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: |
         pytest
