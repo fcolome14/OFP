@@ -5,15 +5,19 @@ from src.controllers.utils.common import fuel_converter
 
 class Calc:
     
+    def __init__(self, db_manager: DatabaseManager):
+        self.db_manager = db_manager
+    
     def get_long_momentum(self, aircraft_id: int = None, pax_weights: list[(str, float, float)] = [], fuel_qty_to: float = 0.00, fuel_qty_land: float = 0.00, pilot_weight: float = 0.00, pilot_baggage: float = 0.00):
-        self.db_manager = DatabaseManager()
+        self.db_manager = DatabaseManager(self.db_manager)
         long_pax_arms, long_aircraft_arms = [], []
         
         long_pax_arms = self.db_manager.get_pax_long_arms(aircraft_id)
+        long_pax_arms_dict = self.db_manager.get_dict(long_pax_arms)
         long_aircraft_arms = self.db_manager.get_aircraft_arms(aircraft_id)
         
         #Convert to dict structure
-        long_pax_arms_dict = {(arm[0], arm[2]): arm[1] for arm in long_pax_arms}
+        #long_pax_arms_dict = {(arm[0], arm[2]): arm[1] for arm in long_pax_arms}
 
         fuel_kg_to = fuel_converter(fuel_qty_to, long_aircraft_arms[0][-1])
         fuel_mom_main_to = 0.6 * fuel_kg_to * long_aircraft_arms[0][3]

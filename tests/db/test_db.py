@@ -29,7 +29,7 @@ class TestDatabaseManager:
         Args:
             mocker (MockerFixture): _description_
         """
-        mock_cursor = db_mocking
+        mock_cursor, mock_conx = db_mocking
         
         #Mocking the fetchall to return a list of tuples. This simulates the data structure returned by the DDBB query
         # self.mock_cursor.fetchall.return_value = [
@@ -41,7 +41,7 @@ class TestDatabaseManager:
         mock_cursor.fetchall.return_value = fetchall_result
         
         #Creating an instance: "get_connection" will return the mock connection patched previously
-        db_manager = DatabaseManager()
+        db_manager = DatabaseManager(mock_conx)
         #Calling the target method in the instance. It returns the fetchall() mocked values from the mocked cursor
         result = db_manager.get_fleet()
         
@@ -60,12 +60,12 @@ class TestDatabaseManager:
         Args:
             mocker (MockerFixture): _description_
         """
-        mock_cursor = db_mocking
+        mock_cursor, mock_conx = db_mocking
         
         #Simulates an exception raised error in the cursor. Must be a proper mysql Error object type not an Exception (Python)
         mock_cursor.execute.side_effect = Error("Simulated database error")
         
-        db_manager = DatabaseManager()
+        db_manager = DatabaseManager(mock_conx)
         result = db_manager.get_fleet()
         
         assert result == []
@@ -77,22 +77,22 @@ class TestDatabaseManager:
     ])
     
     def test_get_register_success(self, db_mocking, fetchall_return, aircraft_id, expected_result):
-        mock_cursor = db_mocking
+        mock_cursor, mock_conx = db_mocking
         
         mock_cursor.fetchall.return_value = fetchall_return
         
-        db_manager = DatabaseManager()
+        db_manager = DatabaseManager(mock_conx)
         result = db_manager.get_registers(aircraft_id)
         
         assert result == expected_result
         
     def test_get_register_exception(self, db_mocking):
-        mock_cursor = db_mocking
+        mock_cursor, mock_conx = db_mocking
         
         #Simulates an exception raised error in the cursor. Must be a proper mysql Error object type not an Exception (Python)
         mock_cursor.execute.side_effect = Error("Simulated database error")
         
-        db_manager = DatabaseManager()
+        db_manager = DatabaseManager(mock_conx)
         result = db_manager.get_registers(-1)
         
         assert result == []
@@ -112,12 +112,12 @@ class TestDatabaseManager:
     
     @pytest.mark.skipif
     def test_get_pilots_succeed(self, db_mocking, fetchall_return, expected_result):
-        mock_cursor = db_mocking
+        mock_cursor, mock_conx = db_mocking
         
         #Simulates an exception raised error in the cursor. Must be a proper mysql Error object type not an Exception (Python)
         mock_cursor.fetchall.return_value = fetchall_return
         
-        db_manager = DatabaseManager()
+        db_manager = DatabaseManager(mock_conx)
         result = db_manager.get_pilots()
         
         assert result == expected_result
@@ -141,12 +141,12 @@ class TestDatabaseManager:
         ])
     
     def test_get_pilot_weight_succeed(self, db_mocking, fetchall_return, expected_result, pilot_id):
-        mock_cursor = db_mocking
+        mock_cursor, mock_conx = db_mocking
         
         #Simulates an exception raised error in the cursor. Must be a proper mysql Error object type not an Exception (Python)
         mock_cursor.fetchall.return_value = fetchall_return
         
-        db_manager = DatabaseManager()
+        db_manager = DatabaseManager(mock_conx)
         result = db_manager.get_pilot_weight(pilot_id)
         
         assert result == expected_result
@@ -170,10 +170,10 @@ class TestDatabaseManager:
         ])
     
     def test_pax_pos_succeed(self, db_mocking, fetchall_result, aircraft_id, expected_result):
-        mock_cursor = db_mocking
+        mock_cursor, mock_conx = db_mocking
         mock_cursor.fetchall.return_value = fetchall_result
         
-        db_manager = DatabaseManager()
+        db_manager = DatabaseManager(mock_conx)
         result = db_manager.get_pax_pos(aircraft_id)
         assert result == expected_result
     
@@ -196,10 +196,10 @@ class TestDatabaseManager:
         ])
     
     def test_pax_succeed(self, db_mocking, fetchall_result, aircraft_id, expected_result):
-        mock_cursor = db_mocking
+        mock_cursor, mock_conx = db_mocking
         mock_cursor.fetchall.return_value = fetchall_result
         
-        db_manager = DatabaseManager()
+        db_manager = DatabaseManager(mock_conx)
         result = db_manager.get_pax(aircraft_id)
         assert result == expected_result
     
@@ -222,10 +222,10 @@ class TestDatabaseManager:
         )
         ])
     def test_limits_long_succeed(self, db_mocking, fetchall_result, aircraft_id, expected_result):
-        mock_cursor = db_mocking
+        mock_cursor, mock_conx = db_mocking
         mock_cursor.fetchall.return_value = fetchall_result
         
-        db_manager = DatabaseManager()
+        db_manager = DatabaseManager(mock_conx)
         result = db_manager.get_long_limits(aircraft_id)
         assert result == expected_result
     
@@ -255,10 +255,10 @@ class TestDatabaseManager:
         ])
     
     def test_pax_arms_succeed(self, db_mocking, fetchall_result, aircraft_id, expected_result):
-        mock_cursor = db_mocking
+        mock_cursor, mock_conx = db_mocking
         mock_cursor.fetchall.return_value = fetchall_result
         
-        db_manager = DatabaseManager()
+        db_manager = DatabaseManager(mock_conx)
         result = db_manager.get_pax_arms(aircraft_id)
         assert result == expected_result
     
@@ -281,10 +281,10 @@ class TestDatabaseManager:
         ])
     
     def test_aircraft_arms_succeed(self, db_mocking, fetchall_result, aircraft_id, expected_result):
-        mock_cursor = db_mocking
+        mock_cursor, mock_conx = db_mocking
         mock_cursor.fetchall.return_value = fetchall_result
         
-        db_manager = DatabaseManager()
+        db_manager = DatabaseManager(mock_conx)
         result = db_manager.get_aircraft_arms(aircraft_id)
         assert result == expected_result
     
@@ -313,9 +313,9 @@ class TestDatabaseManager:
         ])
     
     def test_aircraft_arms_succeed(self, db_mocking, fetchall_result, aircraft_id, expected_result):
-        mock_cursor = db_mocking
+        mock_cursor, mock_conx = db_mocking
         mock_cursor.fetchall.return_value = fetchall_result
         
-        db_manager = DatabaseManager()
+        db_manager = DatabaseManager(mock_conx)
         result = db_manager.get_pax_long_arms(aircraft_id)
         assert result == expected_result

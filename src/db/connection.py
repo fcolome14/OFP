@@ -8,22 +8,8 @@ load_dotenv()
 
 class DatabaseManager:
     
-    def __init__(self):
-        # try:
-        #     self.pool = pooling.MySQLConnectionPool(
-        #         pool_name="mypool",
-        #         pool_size=5,
-        #         host=os.getenv("DB_HOST"),
-        #         user=os.getenv("DB_USER"),
-        #         password=os.getenv("DB_PASSWORD"),
-        #         database=os.getenv("DB_NAME")
-        #     )
-        #     print("Database connection pool created successfully.")
-            
-        # except Error as e:
-        #     print(f"Error {e} occurred during connection attempt")
-        #     raise
-        pass
+    def __init__(self, db_conx):
+        self.pool = db_conx.pool
     
     def db_conn_wrapper(func):
         @wraps(func)
@@ -195,8 +181,28 @@ class DatabaseManager:
             result = cursor.fetchall()
             if not result:
                 return []
-            result = [result[0]]
+            # result = [result[0]]
             return result
         else:
             return []
+    
+    def get_dict(self, input):
+        return {(arm[0], arm[2]): arm[1] for arm in input}
+
+class DatabaseConnection:
+    def __init__(self):
+        try:
+            self.pool = pooling.MySQLConnectionPool(
+                pool_name="mypool",
+                pool_size=5,
+                host=os.getenv("DB_HOST"),
+                user=os.getenv("DB_USER"),
+                password=os.getenv("DB_PASSWORD"),
+                database=os.getenv("DB_NAME")
+            )
+            print("Database connection pool created successfully.")
+            
+        except Error as e:
+            print(f"Error {e} occurred during connection attempt")
+            raise
     

@@ -10,6 +10,9 @@ class LoginController():
     def run(self):
         self.view.mainloop()
     
+    def close(self):
+        self.view.quit()
+    
     def login(self, username, password):
         # Use the model to validate login
         if self.model.validate_user(username, password):

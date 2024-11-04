@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from tkinter import *
-from src.db.connection import DatabaseManager
+from src.db.connection import DatabaseConnection, DatabaseManager
 from datetime import date
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
@@ -14,8 +14,9 @@ class Dashboard(ctk.CTkFrame):
     def __init__(self, controller, master=None):
         super().__init__(master)
         self.controller = controller
-        self.db_manager = DatabaseManager()
-        self.calc = Calc()
+        self.db_conx = DatabaseConnection()
+        self.db_manager = DatabaseManager(self.db_conx)
+        self.calc = Calc(self.db_manager)
         self.connection = self.db_manager.get_connection()
         self.init_dashboard()  # Initialize the dashboard layout
 
